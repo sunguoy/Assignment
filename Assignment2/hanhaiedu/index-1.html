@@ -1,0 +1,1227 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>瀚海国际AP课程</title>
+<link rel="stylesheet" href="css/admin1.css" />
+<script src="js/respond.js"></script>
+<link href="css/style1.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+<script type="text/javascript">
+    function    locking(){   
+   document.all.ly.style.display="block";   
+   document.all.ly.style.width=document.body.clientWidth;   
+   document.all.ly.style.height=document.body.clientHeight;   
+   document.all.Layer2.style.display='block';  
+    
+   }   
+    function    Lock_CheckForm(theForm){   
+   document.all.ly.style.display='none';document.all.Layer2.style.display='none';
+  return   false;   
+   }   
+	function check_baofen()
+	{
+		var name = document.form1.name.value;
+		if(document.form1.name.value==""  )
+		{
+			alert("用户姓名不能为空!");
+			this.form1.name.focus();
+			return ;
+		}
+		var mobile = document.form1.mobile.value;
+		if(!(/^1[3|4|5|8][0-9]\d{4,8}$/.test(mobile))){
+			alert("手机号码格式不正确!");
+			this.form1.mobile.focus();
+			return ;
+		}
+		doyoo.util.openChat('g=10058363');
+		$.ajax({
+			type : "post",
+			url : "http://120.25.92.248:8080/ResourceDownload/saveSource.action",
+			data : {
+				name : encodeURI(name),
+				mobile : mobile,
+			},
+			async : true,
+			dataType : 'jsonp',
+			jsonp : "callback",
+			success : function(data) {
+				
+			},
+			error : function(XMLHttpRequest, textStatus,
+					errorThrown) {
+			},
+		});
+	}
+	
+	$(function() {
+		var $nav = $('div.head_bo').first().clone().hide().appendTo('body');
+		$(window).scroll(function() {
+			var sTop = $(this).scrollTop();
+			$nav.toggleClass('fixed mt', sTop > 45);
+		});
+	});
+</script>
+<script type="text/javascript">
+	$(document).ready(function($) {
+		$(".hint-in3").click(function(event) {
+			var code = $("#tele").val();
+			var pass = $("#code").val();
+			var subject = $("#subject").val();
+			$.ajax({
+				type : "GET",
+				url : "http://120.25.92.248:8080/ResourceDownload/checkCode.action",
+				data : {
+					telephone : code,
+					code : pass,
+					subject : subject,
+				},
+				async : false,
+				dataType : 'jsonp',
+				jsonp : "callback",
+				success : function(data) {
+					if (data.result == "notExist") {
+						alert("请获取验证码");
+					} else if (data.result == "expire") {
+						alert("验证码失效，请重新获取");
+					} else if (data.result == "notEqual") {
+						alert("验证码不正确");
+					} else {
+						window.location.href=data.url;
+					}
+				},
+				error : function(XMLHttpRequest, textStatus, errorThrown) {
+					alert(XMLHttpRequest.status);
+					alert(XMLHttpRequest.readyState);
+					alert(textStatus);
+				},
+			});
+		});
+		/* 设置手机版的按钮 */
+		$(".navbar-toggle").click(function() {
+			$(".mainmenu").slideToggle();
+		});
+	});
+
+	$(function() {
+		//获取短信验证码
+		var validCode = true;
+		var t;
+		$(".msgs").click(
+		function() {
+			var code1 = $("#tele").val();
+			if (code1 == "") {
+				alert("请输入手机号码");
+			} else {
+				var time = 60;
+				var code = $(this);
+				if (validCode) {
+					validCode = false;
+					code.addClass("msgs1");
+					$.ajax({
+						type : "GET",
+						url : "http://120.25.92.248:8080/ResourceDownload/sendCode.action",
+						data : {
+							telephone : code1,
+						},
+						async : true,
+						dataType : 'jsonp',
+						jsonp : "callback",
+						success : function(data) {
+							if (data.result == "overflow") {
+								alert("超出今日获取资源数，请明日下载!");
+							}
+							else if (data.result != "ok") {
+								alert("发送失败!");
+							}
+						},
+						error : function(XMLHttpRequest, textStatus,
+								errorThrown) {
+							alert(XMLHttpRequest.status);
+							alert(XMLHttpRequest.readyState);
+							alert(textStatus);
+						},
+					});
+					t = setInterval(function() {
+						time--;
+						code.html(time + "秒");
+						if (time == 0) {
+							clearInterval(t);
+							code.html("重新获取");
+							validCode = true;
+							code.removeClass("msgs1");
+						}
+					}, 1000)
+				}
+			}
+		})
+		$(".download").click(function() {
+			var code = $(".msgs");
+			code.removeClass("msgs1");
+			clearInterval(t);
+			code.html("获取短信验证码");
+			validCode = true;
+			var tele = $("#tele");
+			tele.val("");
+			var code2 = $("#code");
+			code2.val("");
+			$(".hint").css({
+				"display" : "block"
+			});
+			var subject = $(this).attr('id');
+			$("#subject").val(subject);
+		});
+		/* 点击关闭按钮 */
+		$(".hint3").click(function(event) {
+			$(this).parent().parent().css({
+				"display" : "none"
+			});
+			var code = $(".msgs");
+			code.removeClass("msgs1");
+			clearInterval(t);
+			code.html("获取短信验证码");
+			validCode = true;
+			var tele = $("#tele");
+			tele.val("");
+			var code2 = $("#code");
+			code2.val("");
+		});
+		function tb1() {
+			timerC = setInterval(function() {
+				$(".tc4").show();
+				clearInterval(timerC);
+			}, 30000);
+		}
+		var w = $(window).width();
+		
+		if(w >= 543){
+			timer = setTimeout(function() {
+				$(".tc5").show(); 
+			}, 15000);
+			$(".tc5 em").on("click", function() {
+				$(".tc5").hide();
+				tb1();
+			});
+			$(".tc5 p").on("click", function() {
+				$(".tc5").hide();
+				tb1();
+			});
+		}
+		else{
+			timer = setTimeout(function() {
+				$(".tc5").show(); 
+			}, 15000);
+			$(".tc5 em").on("click", function() {
+				$(".tc5").hide();
+			});
+			$(".tc5 p").on("click", function() {
+				$(".tc5").hide();
+			});
+		}
+
+
+		$(".tc4 em").on("click", function() {
+			$(".tc4").hide();
+		});
+		$(".tc4 p").on("click", function() {
+			$(".tc4").hide();
+		});
+
+		$(".left-flag em").on("click", function() {
+			$(".left-flag").css("display", "none");
+		});
+		$(".right-flag1 em").on("click", function() {
+			$(".right-flag1").css("display", "none");
+		});
+        $(".left-flag1 em").on("click", function() {
+			$(".left-flag1").css("display", "none");
+		});
+		$(".header-em7").on("click", function () {
+			doyoo.util.openChat('g=10058363');
+		});
+		$(".header-em11").on("click", function () {
+			doyoo.util.openChat('g=10058363');
+		});
+		$(".header-em12").on("click", function () {
+			doyoo.util.openChat('g=10058363');
+		});
+		$(".header-em13").on("click", function () {
+			doyoo.util.openChat('g=10058363');
+		});
+		$(".header-em14").on("click", function () {
+			doyoo.util.openChat('g=10058363');
+		});
+		$(".header-em15").on("click", function () {
+			doyoo.util.openChat('g=10058363');
+		});
+		$(".header-em16").on("click", function () {
+			doyoo.util.openChat('g=10058363');
+		});
+		$(".header-em17").on("click", function () {
+			doyoo.util.openChat('g=10058363');
+		});
+		$(".header-em20").on("click", function () {
+			doyoo.util.openChat('g=10058363');
+		});
+		$(".header-em21").on("click", function () {
+			doyoo.util.openChat('g=10058363');
+		});
+		$(".header-em45").on("click", function () {
+			doyoo.util.openChat('g=10058363');
+		});
+		$(".header-em61").on("click", function () {
+			doyoo.util.openChat('g=10058363');
+		});
+		$(".header-em46").on("click", function () {
+			doyoo.util.openChat('g=10058363');
+		});
+		$(".header-em90").on("click", function () {
+			doyoo.util.openChat('g=10058363');
+		});
+		$(".header-em91").on("click", function () {
+			doyoo.util.openChat('g=10058363');
+		});
+		$(".header-em92").on("click", function () {
+			doyoo.util.openChat('g=10058363');
+		});
+		$(".wcaonr .mx_div").hover(function() {
+			$(this).find(".jg").stop().animate({
+				top : "0"
+			}, 300);
+			$(this).find("h4").stop().animate({
+				top : "0"
+			}, 300);
+		}, function() {
+			$(this).find(".jg").stop().animate({
+				top : "160"
+			}, 300);
+			$(this).find("h4").stop().animate({
+				top : "0"
+			}, 300);
+		})
+		$(".ysyybg .mx_div").hover(function() {
+			$(this).find(".jg").stop().animate({
+				top : "0"
+			}, 200);
+		}, function() {
+			$(this).find(".jg").stop().animate({
+				top : "65"
+			}, 200);
+		})
+		$(".mx_divkt").hover(function() {
+			$(this).find(".jgkt").stop().animate({
+				top : "0"
+			}, 200);
+		}, function() {
+			$(this).find(".jgkt").stop().animate({
+				top : "184"
+			}, 200);
+		})
+		$(".mx_divqy").hover(function() {
+			$(this).find(".jgqy").stop().animate({
+				top : "0"
+			}, 200);
+		}, function() {
+			$(this).find(".jgqy").stop().animate({
+				top : "150"
+			}, 200);
+		})
+	})
+</script>
+</head>
+<body>
+	<!-- 主体部分 -->
+	<div class="content2 mob" style="background-color: #EBEDEF;position:fixed;top:0;height:60px;z-index:9999;left:0;">
+		<div class="content1" style="height:60px;">
+			<div class="nav2">
+				<img src="img/logo2.png" />
+				<ul>
+					<li><a href="#kemu">科目查询</a></li>
+					<li><a href="#teacher">师资介绍</a></li>
+					<li class="last"><a href="#xinde">满分学员心得</a></li>
+					<li class="last"><a href="#ziliao">领取免费资料</a></li>
+					<li class="last"><a href="#xuefen">换学分政策</a></li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+	<div class="content2 mob" style="margin-top:60px;">
+		<!-- 轮播图 -->
+		<div class="focus" id="focus">
+			<div id="focus_m" class="focus_m">
+				<ul>
+					<li class="li_1"><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"></a></li>
+					<li class="li_2"><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"></a></li>
+					<li class="li_3"></li>
+				</ul>
+			</div>
+			<div class="control">
+				<a href="javascript:;" class="focus_l" id="focus_l" hidefocus="true"
+					title="上一张"><b></b><span></span></a> <a href="javascript:;"
+					class="focus_r" id="focus_r" hidefocus="true" title="下一张"><b></b><span></span></a>
+			</div>
+		</div>
+	</div>
+	<div class="content1 mob">
+		<div class="dhbg">
+			<div class="xldh">
+				<div class="dhlf">
+					<h1>热门学历类型：</h1>
+					<div class="lffl">
+						<ul>
+							<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">美高AP同步课程</a></li>
+							<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">国际学校AP补习课程</a></li>
+							<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">普高AP业余制课程</a></li>
+							<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">AP远程课程</a></li>
+							<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">国际学校A-Level补习课程
+							</a></li>
+							<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">一年制A-Level高校课程
+							</a></li>
+							<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">普高A-Level业余制课程
+							</a></li>
+							<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">A-Level远程课程
+							</a></li>
+							<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">英国A-Level百强学校申请
+							</a></li>
+						</ul>
+					</div>
+					<div class="dhgd">
+						<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"
+							class="gdbtn">更多</a>
+						<div class="dhbtn">
+							<img src="img/gd.jpg">
+						</div>
+					</div>
+				</div>
+				<div class="dhct">
+					<h1>报名与考试信息：</h1>
+					<div class="ctfl">
+						<ul>
+							<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">入读年级
+							</a></li>
+							<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">考试时间
+							</a></li>
+							<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">报考时间
+							</a></li>
+							<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">全球考点
+							</a></li>
+							<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">专业对应科目
+							</a></li>
+							<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">换学分政策
+							</a></li>
+							<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">报名入口
+							</a></li>
+						</ul>
+					</div>
+					<div class="dhgd">
+						<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"
+							class="gdbtn">更多</a>
+						<div class="dhbtn">
+							<img src="img/gd.jpg">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<img src="img/9-1.jpg" class="bg" /> <img src="img/9-2.jpg"
+			class="bg" />
+		<div class="rela">
+			<img src="img/9-3.jpg" class="bg" /> <a href="javascript:;"
+				class="h-apply" id="contact_weixin" onclick="openWindow(this)"> </a>
+		</div>
+		<div class="rela" id="xuefen">
+			<img src="img/9-4.jpg" class="bg" /><a href="javascript:;"
+				class="h-ask" id="contact_weixin" onclick="openWindow(this)"> </a>
+		</div>
+
+		<img src="img/9-5.jpg" class="bg" /> <img src="img/9-6.jpg"
+			class="bg" /><img src="img/9-7.jpg" class="bg" />
+
+		<div class="gdzynr" id="kemu">
+			<h2>AP科目信息查询中心（共37个科目）</h2>
+			<ul>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">微积分<br>
+						Calculus
+				</a></li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">物理1&2<br>
+						Physics 1&2
+				</a></li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">物理C力学
+						<br>Physics C:Mechanic
+				</a></li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">物理C电磁学
+						<br>Physics C:Electricit
+				</a></li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">统计 <br>Statistics
+				</a></li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">计算机科学A
+						<br>Computer Science
+				</a></li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">微观经济
+						<br>Microeconomics
+				</a></li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">宏观经济
+						<br>Macroeconomics
+				</a></li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">化学 <br>Chemistry
+				</a></li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">心理学<br>Psychology
+				</a></li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">生物学 <br>Biology
+				</a></li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">人文地理
+						<br> Human Geography
+				</a></li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">环境科学
+						<br>Environmental Science
+				</a></li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">更多科目
+						<br>咨询
+				</a></li>
+			</ul>
+		</div>
+		<div class="rela">
+			<img src="img/9-8.jpg" class="bg" /> <a href="javascript:;"
+				class="h-apply1" id="contact_weixin" onclick="openWindow(this)"> </a>
+		</div>
+		<div class="content2">
+			<div id="xtzleft">
+				<div id="xtzlefta">微积分 Calculus</div>
+				<div id="xtzleftb">
+					微积分是理化、工程、计算机、教育学、心理学等专业的必修课。微积分会为今后大学的专业学习铺平道路，因此，也可以用于经济学、商科、生物学、社会学等专业的申请并换取大学学分。
+					<div style="font-size: 18px; margin-top: 20px;">
+						细分科目<br> Calculus AB<br> Calculus BC
+					</div>
+				</div>
+				<div id="xtzleftc">
+					<a id="contact_weixin" onclick="openWindow(this)"
+						id="xtzleftanniu" href="javascript:;">查询通过率及可兑换学分</a>
+				</div>
+			</div>
+			<div id="xtzcenter">
+				<div id="xtzlefta" style="color: #861001">统计 Statistics</div>
+				<div id="xtzcenterb">
+					统计学和微积分一样，是很多学科的工具基础。是理化、生物、计算机、经济、商科等专业的必修课。也可以用于心理学、教育学、工程学、社会学等专业的申请并换取大学学分。
+				</div>
+				<div id="xtzleftc">
+					<a id="contact_weixin" onclick="openWindow(this)"
+						id="xtzleftanniua" href="javascript:;">查询通过率及可兑换学分 </a>
+				</div>
+			</div>
+			<div id="xtzright">
+				<div id="xtzlefta" style="color: #5F327C">物理 Physics</div>
+				<div id="xtzrightb">
+					物理也是中国学生非常擅长，且应用面很广的基础学科。是理化、计算机、工程学专业的必修课。也可以用于心理学、社会学、教育学、生物学等专业的申请并换取大学学分。
+					<div style="font-size: 18px; margin-top: 20px;">
+						细分科目<br>Physics 1 Physics 2<br> Physics C:Mechanic<br>
+						Physics C:Electricit<br>
+					</div>
+				</div>
+				<div id="xtzleftc">
+					<a id="contact_weixin" onclick="openWindow(this)"
+						id="xtzleftanniub" href="javascript:;">查询通过率及可兑换学分 </a>
+				</div>
+			</div>
+		</div>
+
+		<div class="ysyynr">
+			<div class="ysyybt">
+				<h2>更多热门科目</h2>
+			</div>
+			<div class="mx_divqy">
+				<h4>
+					经济学 <br> Economic
+				</h4>
+				<p>申请经济或者商科专业的必修课。同时还可以用于申请教育学、心理学、社会学等专业并换取大学学分。</p>
+				<div class="jgqy" style="top: 150px;">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">查询通过率及积分兑换政策&gt;&gt;
+					</a>
+				</div>
+			</div>
+			<div class="mx_divqy">
+				<h4>
+					化学  <br> Chemistry
+				</h4>
+				<p>申请理化专业的必修课。同时还可以用于申请生物、工程学、药学等专业并换取大学学分。</p>
+				<div class="jgqy" style="top: 150px;">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">查询通过率及积分兑换政策&gt;&gt;
+					</a>
+				</div>
+			</div>
+			<div class="mx_divqy">
+				<h4>
+					生物 <br> Biology
+				</h4>
+				<p>申请生物专业的必修课。同时还可以用于申请理化、医药等专业并换取大学学分。</p>
+				<div class="jgqy" style="top: 150px;">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">查询通过率及积分兑换政策&gt;&gt;
+					</a>
+				</div>
+			</div>
+			<div class="mx_divqy">
+				<h4>
+					计算机科学<br> Computer Science
+				</h4>
+				<p>申请工程学、计算机科学专业的必修课。同时还可以用于申请理化、教育、心理、社会学等专业并换取大学学分。</p>
+				<div class="jgqy" style="top: 150px;">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">查询通过率及积分兑换政策&gt;&gt;
+					</a>
+				</div>
+			</div>
+			<div class="mx_divqy">
+				<h4>
+					环境科学 <br> Environmental Science
+				</h4>
+				<p>可以用于申请理化、生物、社会学等专业并换取大学学分。</p>
+				<div class="jgqy" style="top: 150px;">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">查询通过率及积分兑换政策&gt;&gt;
+					</a>
+				</div>
+			</div>
+			<div class="mx_divqy">
+				<h4>
+					心理学 <br> Psychology
+				</h4>
+				<p>申请心理学、教育学专业的必修课。并换取大学学分。</p>
+				<div class="jgqy" style="top: 150px;">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">查询通过率及积分兑换政策&gt;&gt;
+					</a>
+				</div>
+			</div>
+		</div>
+		<img src="img/tel3.png" class="bg" style="margin-top: 40px;" /> <img
+			src="img/9-10.jpg" class="bg" />
+		<div class="wcaonr">
+
+			<div class="mx_div bo1">
+				<div class="jg" style="top: 160px;">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"
+						id="jgan">点击咨询&gt;&gt;</a>
+				</div>
+			</div>
+
+			<div class="mx_div bo2">
+				<div class="jg" style="top: 160px;">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"
+						id="jgan">点击咨询&gt;&gt;</a>
+				</div>
+			</div>
+
+			<div class="mx_div bo3">
+				<div class="jg" style="top: 160px;">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"
+						id="jgan">点击咨询&gt;&gt;</a>
+				</div>
+			</div>
+
+			<div class="mx_div bo4">
+				<div class="jg">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"
+						id="jgan">点击咨询&gt;&gt;</a>
+				</div>
+			</div>
+
+			<div class="mx_div bo5">
+				<div class="jg" style="top: 160px;">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"
+						id="jgan">点击咨询&gt;&gt;</a>
+				</div>
+			</div>
+
+			<div class="mx_div bo6">
+				<div class="jg">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"
+						id="jgan">点击咨询&gt;&gt;</a>
+				</div>
+			</div>
+
+			<div class="mx_div bo7">
+				<div class="jg" style="top: 160px;">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"
+						id="jgan">点击咨询&gt;&gt;</a>
+				</div>
+			</div>
+
+			<div class="mx_div bo8">
+				<div class="jg">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"
+						id="jgan">点击咨询&gt;&gt;</a>
+				</div>
+			</div>
+
+			<div class="mx_div bo9">
+				<div class="jg" style="top: 160px;">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"
+						id="jgan">点击咨询&gt;&gt;</a>
+				</div>
+			</div>
+
+			<div class="mx_div bo10">
+				<div class="jg">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"
+						id="jgan">点击咨询&gt;&gt;</a>
+				</div>
+			</div>
+
+			<div class="mx_div bo11">
+				<div class="jg" style="top: 160px;">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"
+						id="jgan">点击咨询&gt;&gt;</a>
+				</div>
+			</div>
+
+			<div class="mx_div bo12">
+				<div class="jg">
+					<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"
+						id="jgan">点击咨询&gt;&gt;</a>
+				</div>
+			</div>
+		</div>
+		<img src="img/tel3.png" class="bg" style="margin-top: 40px;" />
+	</div>
+	<div class="hwkbg mob">
+		<div class="hwknr">
+			<img src="img/fa.png">
+			<div class="hwknra">
+				<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"><div
+						class="hwknr1"></div></a> <a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"><div
+						class="hwknr2"></div></a> <a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"><div
+						class="hwknr3"></div></a> <a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"><div
+						class="hwknr4"></div></a> <a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"><div
+						class="hwknr5"></div></a>
+				<div class="clear"></div>
+			</div>
+
+			<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"><img
+				src="img/dj.jpg"></a>
+		</div>
+	</div>
+	<div class="content1 mob">
+		<img src="img/9-11.jpg" class="bg" style="margin-top: 40px;" /> <img
+			src="img/9-12.jpg" class="bg" style="margin-top: 20px;" /><img
+			src="img/9-11-12.jpg" class="bg" style="margin-top: 40px;" /><img
+			src="img/tel3.png" class="bg" style="margin-top: 40px;" />
+		<div class="rela">
+			<img src="img/9-17.png" class="bg3" usemap="#Map7" /> <em
+				class="header-em12"></em> <em class="header-em13"></em>
+		</div>
+		<!-- 点击乐语 -->
+		<map name="Map7">
+			<area shape="rect" coords="700,118,860,160" id="contact_weixin" onclick="openWindow(this)">
+			<area shape="rect" coords="40,350,196,390" id="contact_weixin" onclick="openWindow(this)">
+		</map>
+		<div class="rela">
+			<img src="img/9-18.png" class="bg3" usemap="#Map8" /> <em
+				class="header-em14"></em>
+		</div>
+		<!-- 点击乐语 -->
+		<map name="Map8">
+			<area shape="rect" coords="700,100,850,144" id="contact_weixin" onclick="openWindow(this)">
+		</map>
+		<div class="rela">
+			<img src="img/9-19.png" class="bg3" usemap="#Map9" /> <em
+				class="header-em15"></em><em class="header-em16"></em>
+		</div>
+		<!-- 点击乐语 -->
+		<map name="Map9">
+			<area shape="rect" coords="35,100,190,150" id="contact_weixin" onclick="openWindow(this)">
+			<area shape="rect" coords="700,348,850,390" id="contact_weixin" onclick="openWindow(this)">
+		</map>
+		<div class="rela">
+			<img src="img/9-20.png" class="bg3" usemap="#Map9" /> <em
+				class="header-em46"></em>
+		</div>
+		<div class="rela">
+			<img src="img/9-14.jpg" class="bg3" usemap="#Map10" /><em
+				class="header-em17"></em>
+		</div>
+		<!-- 点击乐语 -->
+		<map name="Map10">
+			<area shape="rect" coords="315,20,630,70" id="contact_weixin" onclick="openWindow(this)">
+		</map>
+		<img src="img/tel3.png" class="bg" style="margin-top: 40px;" />
+		<div class="rela">
+			<img src="img/9-24.png" class="bg" style="margin-top: 40px;"
+				usemap="#Map6" /> <em class="header-em11"></em>
+		</div>
+		<!-- 点击乐语 -->
+		<map name="Map6">
+			<area shape="rect" coords="830,20,970,70" id="contact_weixin" onclick="openWindow(this)">
+		</map>
+		<img src="img/20.png" class="bg" /> <img src="img/9-9.png" class="bg" /><img
+			src="img/9-10.png" class="bg" style="margin-left: -1px" />
+		<div class="rela">
+			<img src="img/23.png" class="bg" style="margin-top: 20px;"
+				usemap="#Map14" /><em class="header-em20"></em>
+		</div>
+		<!-- 点击乐语 -->
+		<map name="Map14">
+			<area shape="rect" coords="380,15,660,60" id="contact_weixin" onclick="openWindow(this)">
+		</map>
+		<img src="img/tel3.png" class="bg" style="margin-top: 40px;" />
+		<div class="rela" id="xinde">
+			<img src="img/ap6.png" class="bg" style="margin-top: 40px;"
+				usemap="#Map94" /><em class="header-em90"></em>
+		</div>
+		<map name="Map94">
+			<area shape="rect" coords="820,270,930,290" id="contact_weixin" onclick="openWindow(this)">
+		</map>
+		<div class="rela">
+			<img src="img/ap7.png" class="bg" usemap="#Map84" /><em class="header-em91"></em>
+			<em class="header-em92"></em>
+		</div>
+
+		<map name="Map84">
+			<area shape="rect" coords="70,270,170,300" id="contact_weixin" onclick="openWindow(this)">
+			<area shape="rect" coords="635,300,750,330" id="contact_weixin" onclick="openWindow(this)">
+		</map>
+		<img src="img/tel3.png" class="bg" style="margin-top: 40px;" />
+		<div class="rela" id="ziliao">
+			<img src="img/9-15.png" class="bg3" usemap="#Map19" /><em
+				class="header-em23"></em>
+		</div>
+		<!-- 点击乐语 -->
+		<map name="Map19">
+			<area shape="rect" coords="380,150,660,190" id="contact_weixin" onclick="openWindow(this)">
+		</map>
+		<div class="rela">
+			<img src="img/9-16.png" class="bg" style="margin-top: 20px;"
+				usemap="#Map20" /> <em class="header-em47 download" id="Calculus"></em><em
+				class="header-em48 download" id="Computer science"></em> <em
+				class="header-em49 download" id="Physics"></em><em
+				class="header-em50 download" id="Chemistry"></em> <em
+				class="header-em51 download" id="Biology"></em><em
+				class="header-em52 download" id="Statistics"></em> <em
+				class="header-em53 download" id="Economic"></em><em
+				class="header-em54 download" id="Art History"></em> <em
+				class="header-em55 download" id="Psychology"></em><em
+				class="header-em56 download" id="Environmental Science"></em> <em
+				class="header-em57 download" id="Human Geography"></em><em
+				class="header-em58 download" id="World History"></em> <em
+				class="header-em59 download" id="EuropeanHistory"></em><em
+				class="header-em60 download" id="United States History"></em><em
+				class="header-em61"></em> <em class="header-em38 download"
+				id="Calculus"></em> <em class="header-em39 download" id="Physics"></em>
+			<em class="header-em40 download" id="Chemistry"></em> <em
+				class="header-em41 download" id="Economic"></em> <em
+				class="header-em42 download" id="Biology"></em> <em
+				class="header-em43 download" id="Statistics"></em> <em
+				class="header-em44 download" id="Psychology"></em> <em
+				class="header-em45"></em>
+		</div>
+		<!-- 点击下载-->
+		<map name="Map20">
+			<area shape="rect" coords="50,85,215,135" class="download"
+				id="Calculus">
+			<area shape="rect" coords="270,85,425,135" class="download"
+				id="Computer science">
+			<area shape="rect" coords="50,160,215,205" class="download"
+				id="Physics">
+			<area shape="rect" coords="270,160,425,205" class="download"
+				id="Chemistry">
+			<area shape="rect" coords="50,230,215,280" class="download"
+				id="Biology">
+			<area shape="rect" coords="270,230,425,280" class="download"
+				id="Statistics">
+			<area shape="rect" coords="50,300,215,350" class="download"
+				id="Economic">
+			<area shape="rect" coords="270,300,425,350" class="download"
+				id="Art History">
+			<area shape="rect" coords="50,370,215,420" class="download"
+				id="Psychology">
+			<area shape="rect" coords="270,370,425,420" class="download"
+				id="Environmental Science">
+			<area shape="rect" coords="50,450,215,500" class="download"
+				id="Human Geography">
+			<area shape="rect" coords="270,450,425,500" class="download"
+				id="World History">
+			<area shape="rect" coords="50,525,215,575" class="download"
+				id="EuropeanHistory">
+			<area shape="rect" coords="270,525,425,575" class="download"
+				id="United States History">
+			<area shape="rect" coords="170,650,310,690" id="contact_weixin" onclick="openWindow(this)">
+			<area shape="rect" coords="900,60,980,90" class="download"
+				id="Calculus">
+			<area shape="rect" coords="900,100,980,130" class="download"
+				id="Physics">
+			<area shape="rect" coords="900,150,980,180" class="download"
+				id="Chemistry">
+			<area shape="rect" coords="900,200,980,230" class="download"
+				id="Economic">
+			<area shape="rect" coords="900,250,980,280" class="download"
+				id="Biology">
+			<area shape="rect" coords="900,290,980,320" class="download"
+				id="Statistics">
+			<area shape="rect" coords="900,330,980,360" class="download"
+				id="Psychology">
+			<area shape="rect" coords="900,690,1000,725" id="contact_weixin" onclick="openWindow(this)">
+		</map>
+	</div>
+	<div class="like mob"
+		style="margin-left: 0px; background: rgb(250, 250, 250);">
+		<div class="likes">
+			<p class="biaoti">猜你喜欢</p>
+			<ul id="footera">
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">AP考试报名流程</a>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">报名考试时间</a>
+					</li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">AP选科建议</a>
+					</li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">AP换学分政策</a>
+					</li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">满分学员心得</a>
+					</li>
+				<li><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">免费资料礼包</a>
+				</li>
+				<li style="margin-right: 0"><a href="javascript:;" id="contact_weixin" onclick="openWindow(this)">免费领取课程</a>
+					</li>
+			</ul>
+			
+		</div>
+	</div>
+	<input type="hidden" id="subject" />
+	<!-- 短信验证页面 -->
+	<div class="hint">
+		<div class="hint-in1">
+			<div class="hint3"></div>
+		</div>
+		<input type="text" placeholder="请输入您的手机号码 " id="tele" /> <span
+			class="msgs">获取短信验证码</span><input type="text"
+			placeholder="请输入手机号码验证码 " id="code" />
+		<div class="hint-in3">立即下载</div>
+		<div class="ad">环球精英 名师指导 精品课程</div>
+	</div>
+	
+	<div class="tc4 mob">
+		<em></em>
+		<p class="Tckbtn" id="contact_weixin" onclick="openWindow(this)"></p>
+	</div>
+
+	<!--<div class="tc5 mob">
+		<em></em>
+		<p class="Tckbtn" id="contact_weixin" onclick="openWindow(this)"></p>
+	</div>下掉的弹出框-->
+    
+    <div class="right-flag1 mob"   
+        style="position: fixed; left: 300px; top: 80px; repeat-x; z-index: 999; margin-right: 5px;">
+		<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"> <img
+			src="img/4db91620a897825fa683b8a95c5d540e.jpg" width="838px" height="451px">
+		</a> <em></em>
+         <p class="Tckbtn" onClick="NTKF.im_openInPageChat('kf_9410_1474451923999')"></p>
+	</div>
+
+	<div class="left-flag1 mob"
+		style="position: fixed; left: 0px; top: 80px; repeat-x; z-index: 999; margin-right: 5px;">
+		<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"> <img
+			src="img/index91.png" width="150px" height="301px">
+		</a> <em></em>
+        <p class="Tckbtn" onClick="NTKF.im_openInPageChat('kf_9410_1474451923999')"></p>
+	</div>
+	<div class="footer-bottom">
+		<a class="footer1" id="contact_weixin" onclick="openWindow(this)">在线咨询</a> <a
+			class="footer2" href="tel:4000-992-968">电话咨询</a> <a class="footer3" id="contact_weixin" onclick="openWindow(this)">免费试听</a> <a
+			class="footer4" id="contact_weixin" onclick="openWindow(this)">免费资料</a>
+	</div>
+	<div class="foot">
+		<form name="messageForm" method="post" action="/message.action"
+			id="messageForm2">
+			<table width="1000" border="0" cellpadding="0" cellspacing="0"
+				style="margin: 0 auto;">
+				<tbody>
+					<tr>
+						<td width="240" height="40" align="left"><span
+							style="font-family: '微软雅黑'; color: #FFF; font-size: 14px;">咨询电话</span></td>
+						<td width="154" align="left">&nbsp;</td>
+						<td width="150" align="left">&nbsp;</td>
+						<td width="161" align="left">&nbsp;</td>
+						<td width="295" rowspan="6" align="center" top="20"><img
+							src="img/foot2.jpg"></td>
+					</tr>
+					<tr>
+						<td height="35" align="left"><span
+							style="font-family: '微软雅黑'; color: #FFF; font-size: 14px;">13418602677</span></td>
+						<td align="left">&nbsp;</td>
+						<td align="left">&nbsp;</td>
+						<td align="left">&nbsp;</td>
+					</tr>
+					<tr>
+						<td height="50" align="left"><input
+							onblur="if (this.value=='')this.value='您的姓名：'" class="enterinput"
+							name="msg.name" id="name" type="text" value="您的姓名：" size="12"
+							onfocus="this.value=''"
+							style="font-size: 13px; height: 30px; line-height: 30px; width: 205px; background-color: #252728; border: #75787a solid 1px; color: #75787a; padding-left: 10px;"></td>
+						<td align="left">
+							<div class="foot2">
+								<a id="contact_weixin" onclick="openWindow(this)"
+									looyu_bound="1">留学考试培训</a>
+							</div>
+						</td>
+						<td align="left">
+							<div class="foot2">
+								<a id="contact_weixin" onclick="openWindow(this)"
+									looyu_bound="1">留学申请</a>
+							</div>
+						</td>
+						<td align="left">
+							<div class="foot2">
+								<a id="contact_weixin" onclick="openWindow(this)"
+									looyu_bound="1">面试陪同及辅导</a>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td height="50" align="left"><input
+							onblur="if (this.value=='')this.value='您的联系方式：'" type="text"
+							name="msg.phone" id="phone" class="enterinput_one"
+							value="您的联系方式：" size="12" onfocus="this.value=''"
+							style="font-size: 13px; height: 30px; line-height: 30px; width: 205px; background-color: #252728; border: #75787a solid 1px; color: #75787a; padding-left: 10px;"></td>
+						<td align="left">
+							<div class="foot2">
+								<a id="contact_weixin" onclick="openWindow(this)"
+									looyu_bound="1">背景提升</a>
+							</div>
+						</td>
+						<td align="left">
+							<div class="foot2">
+								<a id="contact_weixin" onclick="openWindow(this)"
+									looyu_bound="1">海外学校考察</a>
+							</div>
+						</td>
+						<td align="left">
+							<div class="foot2">
+								<a id="contact_weixin" onclick="openWindow(this)"
+									looyu_bound="1">海外监护与辅导</a>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td height="100" align="left"><textarea
+								onblur="if (this.value=='')this.value='留言：'" value="留言："
+								size="12" class="enterinput" onfocus="this.value=''"
+								name="msg.field2" cols="" id="field2" rows=""
+								style="font-size: 13px; height: 80px; line-height: 30px; width: 205px; background-color: #252728; border: #75787a solid 1px; color: #75787a; padding-left: 10px;"></textarea>
+							<input type="hidden" value="广州分校" name="msg.school_code"
+							id="schoolCode"> <input type="hidden" value="教师资格证"
+							name="msg.project_code"> <input name="msg.field1"
+							type="hidden" class="enterinput" id="field1" value="浙江教师">
+							<input type="hidden"
+							value="http://i.sunlands.com/portal-war/message.action"
+							id="msgUrl"></td>
+						<td colspan="3" align="left" class="foottext">
+							<p>
+								深圳福田校区：华强北路4002号圣庭苑酒店3楼UU橙教育中心 <br>
+							</p>
+							<p>
+								南山校区：海岸城海德三道199号天利中央广场A座2401<br>
+								美国：9800 Centre Pkwy Suite 860，Houston，TX77036
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<td align="left"><input type="button"
+							onclick="tuiguang_message_open('messageForm2',callback,1,35)"
+							style="width: 76px; height: 29px; background: url(img/djtj.jpg) no-repeat; border: 0; cursor: pointer;"></td>
+						<td colspan="3" align="left" class="foottext">
+							备案/许可证编号为：粤ICP备15099729号</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	</div>
+	
+	<div id="header">
+		<div class="wbox">
+			<div class="logo">
+				<img src="img/logo44.png" width="92" height="40" />
+			</div>
+			<span>AP课程中心</span>
+			<div class="phone1">
+				<a href="tel:4000-992-968">13418602677 </a>
+			</div>
+		</div>
+		<div class="head_bo">
+			<div class="nav">
+				<ul>
+					<li class="dq" style="width: 8%;"><a href="page2.html">首页</a></li>
+					<li><a href="page1.html">名师在线</a></li>
+					<li><a href="page3.html">机构介绍</a></li>
+					<li><a href="page4.html">科目查询</a></li>
+					<li><a href="page5.html">挑选班级</a></li>
+					<li><a href="page6.html">学员互动</a></li>
+					<li><a href="page7.html">学分政策</a></li>
+				</ul>
+			</div>
+
+			<div class="ban">
+				<ul>
+					<li><a id="contact_weixin" onclick="openWindow(this)"
+						class="ban_1">普高零基础考AP</a></li>
+					<li><a id="contact_weixin" onclick="openWindow(this)"
+						class="ban_2">AP考试介绍</a></li>
+					<li><a id="contact_weixin" onclick="openWindow(this)"
+						class="ban_3">报考时间咨询</a></li>
+					<li><a id="contact_weixin" onclick="openWindow(this)"
+						class="ban_4">全球考点查询</a></li>
+					<li><a id="contact_weixin" onclick="openWindow(this)"
+						class="ban_5">热门科目推荐</a></li>
+					<li><a id="contact_weixin" onclick="openWindow(this)"
+						class="ban_6">报考流程咨询</a></li>
+					<li><a id="contact_weixin" onclick="openWindow(this)"
+						class="ban_6">换学分政策咨询</a></li>
+					<li><a id="contact_weixin" onclick="openWindow(this)"
+						class="ban_1">培训课程设置</a></li>
+					<li><a id="contact_weixin" onclick="openWindow(this)"
+						class="ban_5">领取免费课程</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="contant">
+
+		<div class="co_title">
+			<p>（新发布）2016年AP课程真题全解析</p>
+		</div>
+
+		<div class="contant_free">
+			<ul>
+				<li><a id="contact_weixin" onclick="openWindow(this)">微积分</a></li>
+				<li><a id="contact_weixin" onclick="openWindow(this)">物理 </a></li>
+				<li><a id="contact_weixin" onclick="openWindow(this)">统计学</a></li>
+				<li><a id="contact_weixin" onclick="openWindow(this)">经济 </a></li>
+				<li><a id="contact_weixin" onclick="openWindow(this)">计算机</a></li>
+			</ul>
+		</div>
+
+		<div class="co_title">
+			<p>AP课程常见问题环球精英为你解答</p>
+		</div>
+		<div class="wbox">
+			<div class="co_list">
+				<ul>
+					<li><a id="contact_weixin" onclick="openWindow(this)">AP几年级考比较好？
+					</a></li>
+					<li><a id="contact_weixin" onclick="openWindow(this)">哪些科目容易考？
+					</a></li>
+					<li><a id="contact_weixin" onclick="openWindow(this)">如何换取大学学分？
+					</a></li>
+					<li><a id="contact_weixin" onclick="openWindow(this)">AP课程要多少费用？
+					</a></li>
+					<li><a id="contact_weixin" onclick="openWindow(this)">AP通常要学多久？
+					</a></li>
+					<li><a id="contact_weixin" onclick="openWindow(this)">报考时间，考点查询？
+					</a></li>
+					<li><a id="contact_weixin" onclick="openWindow(this)">怎么上课，在哪上课？
+					</a></li>
+					<li><a id="contact_weixin" onclick="openWindow(this)">可以省多少大学学费？
+					</a></li>
+					<li><a id="contact_weixin" onclick="openWindow(this)">我的专业推荐哪些AP？
+					</a></li>
+
+				</ul>
+				<div class="co_list_a">
+					<a id="contact_weixin" onclick="openWindow(this)">申名校一般需要几门AP成绩
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="formdata">
+		<form name="form1">
+			<div class="input_left">
+				 <input
+					type="text" class="bt_input" name="name" placeholder="请输入你的姓名" /> <input
+					type="text" class="bt_input" name="mobile" placeholder="请输入你的手机号" />
+			</div>
+			<a onclick="check_baofen()"><input
+				type="button" class="bt_submit" value="获取资料" /></a>
+		</form>
+	</div>
+	<div class="page1_footer" style="background:#DCDDE0;margin-bottom:50px;">
+		<div class="page1_footer_left">
+			<p>如果你有任何疑问欢迎咨询在线名师</p>
+			<div class="page1_fo">
+				<ul>
+					<li style="width: 44%"><a id="contact_weixin" onclick="openWindow(this)">咨询入口一</a></li>
+					<li style="width: 44%"><a id="contact_weixin" onclick="openWindow(this)">咨询入口二</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="page1_footer_right">
+			<img src="img/erweima.png" width="60" /> <span>欢迎扫码<br />
+				关注公众号<br /> USA-AP
+			</span>
+		</div>
+	</div>
+	<div class="mobile-left">
+		<a href="javascript:;" id="contact_weixin" onclick="openWindow(this)"> <img
+			src="img/mobile-left.jpg" width="20" />
+		</a>
+	</div>
+	<div class="mobile-right">
+		<a href="http://wpa.b.qq.com/cgi/wpa.php?ln=2&uin=4000992968">
+			<img src="img/qq.png" width="20" />
+		</a>
+	</div>
+    
+    
+    
+  
+    
+    
+     <div id="light_weixin" class="white_content" align="center" >
+		<img src="img/weixin_erweima.png" width="40%" onClick="closeWindow()"/>
+	</div>
+	<div id="fade" class="black_overlay">
+    
+
+
+
+
+    
+    
+    
+    
+    
+	<script src="js/script.js"></script>
+	<script type="text/javascript" src="js/RGBEuPA.js"></script>
+	<!--<script type="text/javascript" charset="utf-8" src="http://lead.soperson.com/20001036/10062779.js"></script>-->
+    
+<!--小能在线客服-->
+<script type="text/javascript"> 
+var NTKF_PARAM ={
+	"siteid":"kf_9410" /*网站siteid*/,
+	"settingid":"kf_9410_1474447421535" /*代码ID*/, 
+	"uid":"" /*会员ID*/,
+	"uname":""/*会员名*/,
+	"userlevel": "0"/*会员等级*/}
+</script>
+<script type="text/javascript" src="http://dl.ntalker.com/js/xn6/ntkfstat.js?siteid=kf_9410" charset="utf-8"></script>
+
+
+
+<!--小能在线客服end-->
+	<script>
+		function openWindow(obj){
+			document.getElementById("light_weixin").style.display='block';
+			document.getElementById('fade').style.display='block';
+		}
+		function closeWindow(){
+			document.getElementById('light_weixin').style.display='none';
+			document.getElementById('fade').style.display='none';
+		}
+	</script>
+    
+</body>
+</html>
+
+
+
+
+
+
